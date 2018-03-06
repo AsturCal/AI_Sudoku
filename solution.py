@@ -19,31 +19,30 @@ peers = extract_peers(units, boxes)
 
 """
 Three functions for Naked twins. 
-    - Fine naked twins to find the naked twins separately.
-    - Eliminate twin values from peers .... helper removes values from peers. 
-    - 
+    - (Helper)Fine naked twins to find the naked twins separately.
+    - (Helper)Eliminate twin values from peers .... helper removes values from peers. 
+    - (main) The code requested.
 """
 def find_naked_twins(possible_twins, values):
-    # Store in list of tuples all pairs of boxes that each contain the same two numbers(naked twins)
-
-    #logging.info("Naked Twins Strategy - Finding Naked Twins")
+    """
+    Store in an array of tuples all values that are actually same 2 numbers in two different boxes 
+    """
 
     naked_twins = []
-    for box_twin1 in possible_twins:
-        for box_twin2 in peers[box_twin1]:
-            if values[box_twin1] == values[box_twin2]:
-                naked_twins.append((box_twin1, box_twin2))
+    for twin1 in possible_twins:
+        for twin2 in peers[twin1]:
+            if values[twin1] == values[twin2]:
+                #actually found a twin....
+                naked_twins.append((twin1, twin2))
     return naked_twins
 
-def eliminate_twin_values_from_peers(naked_twins, values):
+def remove_twin_values(naked_twins, values):
     """
-    Iterate over all the pairs of naked twins.
+    Iterate over all the pairs of naked twins found.
     - Find peer boxes that have common twins and intersect
     - Iterate over the set of intersecting peers
-    - Delete the naked twins values from each of those intersecting peers containing more than two possible values
+    - Delete the naked twins values from each of those intersecting peers with 2+ values
     """
-
-    #logging.info("Naked Twins Strategy - Eliminating Twin Values from from Intersecting Peers")
 
     for index in range(len(naked_twins)):
         box1, box2 = naked_twins[index][0], naked_twins[index][1]
@@ -52,7 +51,7 @@ def eliminate_twin_values_from_peers(naked_twins, values):
         for peer_box in peers_intersection:
             if len(values[peer_box]) > 1:
                 for digit in values[box1]:
-                    # values[peer_box] = values[peer_box].replace(digit, '')
+                    #Use given function.
                     values = assign_value(values, peer_box, values[peer_box].replace(digit,''))
 def naked_twins(values):
     """Eliminate values using the naked twins strategy.
@@ -82,13 +81,12 @@ def naked_twins(values):
     strategy repeatedly).
     """
     # TODO: Implement this function!
-    # Find all boxes containing exactly two possibilities
-    possible_twins = [box for box in values.keys() if len(values[box]) == 2]
-    # print("Possible naked twins: ", possible_twins)
+    # Find all possible twin candidates - boxes with only two values. 
+    candidate_twins = [box for box in values.keys() if len(values[box]) == 2]
 
-    naked_twins = find_naked_twins(possible_twins, values)
+    naked_twins = find_naked_twins(candidate_twins, values)
 
-    eliminate_twin_values_from_peers(naked_twins, values)
+    remove_twin_values(naked_twins, values)
 
     return values
 
